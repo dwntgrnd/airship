@@ -31,6 +31,8 @@ Upstream's contributor rules live in `CONTRIBUTING.md` and `.claude/CLAUDE.md`
 2. **Edit/View mode toggle shortcut**, user-configurable keymap.
    Code: `packages/overlay/src/keys/` (catalog.ts is the single source; `CONTROLS.md` is
    GENERATED from it via `make controls`). Upstreamable.
+   Also (Doren, 2026-08-23): a shortcut to open/collapse the side docks (agent/chat dock and the
+   edit/inspector dock). Not in 0.3.0's catalog (only double-click-header redock exists).
 3. **Agent panel**: (a) model selector in the UI (CLI already has `--model`/`--claude-model`;
    wire a dropdown through); (b) follow-up suggestions multi-select: chips toggle, submit
    concatenates selected, chip row survives submit. Code: `packages/overlay/src/chat/transcript.ts`
