@@ -17,8 +17,9 @@ Upstream's contributor rules live in `CONTRIBUTING.md` and `.claude/CLAUDE.md`
 ## Running
 
 - `./airship ...` = this checkout's CLI (rebuilds when packages change).
-- `airship-dev` (symlink in /opt/homebrew/bin → ./airship) = same thing from anywhere.
-- `airship` (stock 0.2.3, npm global) = untouched control.
+- `airship` AND `airship-dev` (symlinks in /opt/homebrew/bin → ./airship) = same thing from
+  anywhere. Stock npm global was uninstalled 2026-08-23; `npm i -g @airshiplabs/cli` restores it.
+- Whatever `fork` has checked out is what `airship` runs. Stay on `fork` between feature work.
 - `pnpm install && pnpm build` after pulling; `make check` = lint + typecheck + test.
 
 ## The three items (Doren, 2026-08-23)
