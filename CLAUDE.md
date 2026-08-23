@@ -36,7 +36,8 @@ Upstream's contributor rules live in `CONTRIBUTING.md` and `.claude/CLAUDE.md`
    edit/inspector dock). Not in 0.3.0's catalog (only double-click-header redock exists).
 3. **Agent panel**: (a) model selector in the UI (CLI already has `--model`/`--claude-model`;
    wire a dropdown through); (b) follow-up suggestions multi-select: chips toggle, submit
-   concatenates selected, chip row survives submit. Code: `packages/overlay/src/chat/transcript.ts`
+   concatenates selected, chip row survives submit. (b) DONE 2026-08-23 (fork, `feat/followup-multiselect`);
+   (a) was already upstream in 0.3.0 (chat-header picker). Code: `packages/overlay/src/chat/transcript.ts`
    (`followUps`, `onFollowUp`), `packages/core/src/prompt.ts` (asks for ≤3 follow-ups),
    `packages/server/src/index.ts` (~L924 passes `followUps`). Upstreamable.
 
