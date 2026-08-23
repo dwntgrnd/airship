@@ -24,7 +24,14 @@ export interface AssistantActions {
   onCommit?: (push: boolean) => void;
   onCopyPath?: (file: string) => void;
   onCreatePr?: () => void;
-  onFollowUp?: (text: string) => void;
+  /**
+   * A follow-up chip was toggled. `on` is the chip's new state: pressed means
+   * "put this in the composer", released means "take it back out". Chips are
+   * toggles rather than one-shots because the agent offers up to three and a
+   * user often wants two of them in one turn; a chip that replaced the composer
+   * made the second click destroy the first.
+   */
+  onFollowUp?: (text: string, on: boolean) => void;
   onOpenIn?: (editor: Editor, file: string, line?: number) => void;
   onUndo?: () => void;
 }
@@ -139,21 +146,64 @@ export function fillAssistant(
   if (bundle.followUps?.length && onFollowUp) {
     const follow = el("div", { class: cls("follow") });
     for (const f of bundle.followUps) {
-      follow.append(
-        el("button", { onClick: () => onFollowUp(f), type: "button" }, [
-          icon("chev-right", "sm"),
+      const chip = el(
+        "button",
+        {
+          "aria-pressed": "false",
+          onClick: () => {
+            const on = chip.getAttribute("aria-pressed") !== "true";
+            chip.setAttribute("aria-pressed", String(on));
+            onFollowUp(f, on);
+          },
+          type: "button",
+        },
+        [
+          // Both glyphs are in the DOM; the stylesheet shows one per state.
+          // A chevron says "go"; a check says "in the field" — the surface
+          // change alone is a few greys apart and does not carry it.
+          el("span", { class: cls("follow-go") }, [icon("chev-right", "sm")]),
+          el("span", { class: cls("follow-on") }, [icon("check", "sm")]),
           el("span", { text: f }),
-        ])
+        ]
       );
+      follow.append(chip);
     }
     const n = bundle.followUps.length;
-    target.append(
-      collapsible(
-        `${n} suggestion${n === 1 ? "" : "s"}`,
-        follow,
-        cls("follow-disc")
-      )
+    const disc = collapsible(
+      `${n} suggestion${n === 1 ? "" : "s"}`,
+      follow,
+      cls("follow-disc")
     );
+    FOLLOW_BODIES.set(disc, follow);
+    target.append(disc);
+  }
+}
+
+/**
+ * Each follow-up disclosure's body, keyed by the disclosure root.
+ *
+ * A collapsed disclosure detaches its body from the document, so a query over
+ * the transcript cannot reach the chips inside a folded turn — and a folded
+ * turn is exactly where a pressed chip is most likely to be forgotten. The root
+ * stays in the transcript for the life of the turn; weakly keyed, so a cleared
+ * transcript takes its entries with it.
+ */
+const FOLLOW_BODIES = new WeakMap<HTMLElement, HTMLElement>();
+
+/**
+ * Release every pressed follow-up chip under `root`.
+ *
+ * The composer is what a pressed chip describes — "this suggestion is in the
+ * field" — so whatever empties the composer (a send, a new chat) owes the
+ * chips this call, or they go on claiming a turn that has already gone.
+ */
+export function releaseFollowUps(root: ParentNode): void {
+  for (const disc of root.querySelectorAll(`.${cls("follow-disc")}`)) {
+    const body = disc instanceof HTMLElement ? FOLLOW_BODIES.get(disc) : null;
+    for (const chip of body?.querySelectorAll('button[aria-pressed="true"]') ??
+      []) {
+      chip.setAttribute("aria-pressed", "false");
+    }
   }
 }
 

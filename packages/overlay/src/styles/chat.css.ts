@@ -560,4 +560,15 @@ ${ROOT} .${PREFIX}-tl-res .${PREFIX}-ic { flex: 0 0 auto; --${PREFIX}-ic-tone: v
   border-radius: var(--ap-radius-sm); padding: 6px 10px;
 }
 .${PREFIX}-follow button:hover { border-color: var(--ap-border-strong); background: var(--ap-surface-active); }
-.${PREFIX}-follow button { --${PREFIX}-ic-tone: var(--ap-text-tertiary); }`;
+.${PREFIX}-follow button { --${PREFIX}-ic-tone: var(--ap-text-tertiary); }
+/* Pressed = "this one is in the composer". The selected surface and a strong
+   border, the same pair a lit icon button uses, so the state reads from across
+   the panel without a second glyph. */
+.${PREFIX}-follow button[aria-pressed="true"] {
+  background: var(--ap-surface-selected); border-color: var(--ap-border-strong);
+  --${PREFIX}-ic-tone: var(--ap-text-primary);
+}
+.${PREFIX}-follow-go, .${PREFIX}-follow-on { display: inline-flex; flex: 0 0 auto; }
+.${PREFIX}-follow button .${PREFIX}-follow-on,
+.${PREFIX}-follow button[aria-pressed="true"] .${PREFIX}-follow-go { display: none; }
+.${PREFIX}-follow button[aria-pressed="true"] .${PREFIX}-follow-on { display: inline-flex; }`;

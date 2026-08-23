@@ -30,6 +30,7 @@ import {
   shortValue,
 } from "./chat/change-chips";
 import { openCommentPopover } from "./chat/comment-popover";
+import { toggleFollowUpLine } from "./chat/follow-ups";
 import { customModelRow, modelGroups, modelLabel } from "./chat/model-menu";
 import { restoreModelPick, saveModelPick } from "./chat/model-store";
 import { renderThreads } from "./chat/threads";
@@ -38,6 +39,7 @@ import {
   type AssistantTurn,
   assistantTurn,
   fillAssistant,
+  releaseFollowUps,
   setTurnStatus,
   userBubble,
 } from "./chat/transcript";
@@ -3717,6 +3719,9 @@ export class AirshipApp {
     // now is the streaming reply, in the transcript this pane is covering.
     this.setPreview(false);
     this.input.value = "";
+    // The chips that composed this turn are still pressed in the transcript;
+    // the turn is away, so they no longer describe the field.
+    releaseFollowUps(this.transcriptEl);
     this.images = [];
     this.commentSet.clear();
     this.renderChips();
@@ -4283,7 +4288,7 @@ export class AirshipApp {
         : undefined,
       onCopyPath: canRevert ? (file) => this.copyPath(file) : undefined,
       onCreatePr: canRevert ? () => this.createPr(bundle.jobId) : undefined,
-      onFollowUp: (text) => this.useFollowUp(text),
+      onFollowUp: (text, on) => this.useFollowUp(text, on),
       onOpenIn: canRevert
         ? (editor, file, line) => this.openIn(editor, file, line)
         : undefined,
@@ -4311,8 +4316,10 @@ export class AirshipApp {
     }
   }
 
-  private useFollowUp(text: string): void {
-    this.input.value = text;
+  /** A follow-up chip toggled: its line goes into the composer, or comes out.
+   * See `toggleFollowUpLine` for why it is a line and not a replacement. */
+  private useFollowUp(text: string, on: boolean): void {
+    this.input.value = toggleFollowUpLine(this.input.value, text, on);
     // setLeft → afterDockToggle re-grows the field for the new value.
     this.setLeft(true);
     this.input.focus();
