@@ -28,7 +28,8 @@ Upstream's contributor rules live in `CONTRIBUTING.md` and `.claude/CLAUDE.md`
    canvas as a switchable mode (bird's-eye view still valued). Likely fork-only.
    Code: `packages/overlay/src/canvas/` (frames.ts, frame-chrome.ts, device-menu.ts,
    presets, frames-panel.ts).
-2. **Edit/View mode toggle shortcut**, user-configurable keymap.
+2. **Edit/View mode toggle shortcut**, user-configurable keymap. DONE 2026-08-23 (fork): `mode.toggle` ⌘E,
+   `dock.left` ⌘\, `dock.right` ⌘⇧\ (commit on `feat/mode-and-dock-keys`). Configurable keymap still OPEN.
    Code: `packages/overlay/src/keys/` (catalog.ts is the single source; `CONTROLS.md` is
    GENERATED from it via `make controls`). Upstreamable.
    Also (Doren, 2026-08-23): a shortcut to open/collapse the side docks (agent/chat dock and the
